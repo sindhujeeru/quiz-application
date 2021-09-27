@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,54 +43,57 @@ public class QuizController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(questionDb);
 	}
 	
-	@GetMapping("/displayQuestion")
-	public ResponseEntity<?> displayQuestion(){
+	@GetMapping(value="/attempt",params = {"id","answer"})
+	public ResponseEntity<?> attemptQuestion(@RequestParam(value = "id") String id, @RequestParam(value="answer") String answer){
 		
-		int attempted = 0;
 		List<Question> questionsEasy = questionService.getQuestionsByDifficulty("EASY");
 		List<Question> questionsMedium = questionService.getQuestionsByDifficulty("MEDIUM");
 		List<Question> questionsHard = questionService.getQuestionsByDifficulty("HARD");
 		
 		Random rand = new Random();
 	    Question randomEasy = questionsEasy.get(rand.nextInt(questionsEasy.size()));
-	    Question randomMedium = questionsEasy.get(rand.nextInt(questionsMedium.size()));
-	    Question randomHard = questionsEasy.get(rand.nextInt(questionsHard.size()));
-	    
-	    Question quest = randomEasy;
-	    if(attempted == 0) {
-	    	return ResponseEntity.ok(quest);
-	    }else {
-	    	
-	    	for(int i=0; i<10; i++) {
-		    	if(quest.getResponded() && quest.getDifficulty().equalsIgnoreCase("easy")) {
-		    		quest = randomMedium; 
-		    	}else if (quest.getResponded() && quest.getDifficulty().equalsIgnoreCase("medium")) {
-					quest = randomHard;
-				}else {
-					quest = randomEasy;
-				}
-		    	
-		    	return ResponseEntity.ok(quest);
-		    }
-	    	
-	    	return ResponseEntity.ok("Test finished");
-	    }
-	    
-	    
+	    Question randomMedium = questionsMedium.get(rand.nextInt(questionsMedium.size()));
+	    Question randomHard = questionsHard.get(rand.nextInt(questionsHard.size()));
+		
+		Question question = questionService.getQuestionById(id);
+		
+		String correctAnswer = question.getCorrect();
+		
+		
+		if(correctAnswer.equalsIgnoreCase(answer) && question.getDifficulty().equals("EASY")) {
+			question.setResponded(true);
+			questionService.updateQuestion(question);
+			question = randomMedium;
+			
+			System.out.println("first if condition"+randomMedium);
+			return ResponseEntity.ok(question);
+		}else if (correctAnswer.equalsIgnoreCase(answer) && question.getDifficulty().equals("MEDIUM")) {
+			question.setResponded(true);
+			questionService.updateQuestion(question);
+			question = randomHard;
+			System.out.println("second if condition"+randomHard);
+			return ResponseEntity.ok(question);
+		}else if (correctAnswer.equalsIgnoreCase(answer) && question.getDifficulty().equals("HARD")) {
+			question.setResponded(true);
+			questionService.updateQuestion(question);
+			question = randomHard;
+			
+			System.out.println("third else condidtion"+randomHard);
+			return ResponseEntity.ok(question);
+		}else {
+			question.setResponded(false);
+			questionService.updateQuestion(question);
+			System.out.println("final else condidtion"+randomEasy);
+			return ResponseEntity.ok(question);
+		}
+		
+		//dhdsf
+		
+		//awrtywy;
 	}
 	
-	@PostMapping("/displayQuestion")
-	public ResponseEntity<?> getQuestionsByDifficulty(@RequestBody Question question){
-		
-		Question updateQuestion = new Question();
-		
-		updateQuestion.setId(question.getId());
+	
+	
 
-		updateQuestion.setResponded(question.getResponded());
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(updateQuestion);
-	}
-	
-	
 
 }

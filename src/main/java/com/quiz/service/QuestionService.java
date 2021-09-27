@@ -12,5 +12,9 @@ public interface QuestionService {
 	public List<Question> getQuestions();
 	
 	public List<Question> getQuestionsByDifficulty(String difficulty);
+	
+	public Question getQuestionById(String id);
+	
+	public Question updateQuestion(Question question);
 
 }

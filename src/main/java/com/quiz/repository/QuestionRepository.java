@@ -10,4 +10,6 @@ import com.quiz.model.Question;
 @Repository
 public interface QuestionRepository extends MongoRepository<Question, Long> {
 	public List<Question> findByDifficulty(String difficulty);
+	
+	public Question findById(String id);
 }
