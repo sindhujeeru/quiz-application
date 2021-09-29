@@ -12,4 +12,6 @@ public interface QuestionRepository extends MongoRepository<Question, Long> {
 	public List<Question> findByDifficulty(String difficulty);
 	
 	public Question findById(String id);
+	
+	public Question findQuestionByDifficulty(String difficulty);
 }

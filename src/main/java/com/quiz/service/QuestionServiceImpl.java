@@ -46,4 +46,10 @@ public class QuestionServiceImpl  implements QuestionService {
 		return questionRepo.save(question);
 	}
 
+	@Override
+	public Question getQuestionByDifficulty(String difficulty) {
+		
+		return questionRepo.findQuestionByDifficulty(difficulty);
+	}
+
 }

@@ -43,7 +43,7 @@ public class QuizController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(questionDb);
 	}
 	
-	@GetMapping(value="/attempt",params = {"id","answer"})
+	/*@GetMapping(value="/attempt",params = {"id","answer"})
 	public ResponseEntity<?> attemptQuestion(@RequestParam(value = "id") String id, @RequestParam(value="answer") String answer){
 		
 		List<Question> questionsEasy = questionService.getQuestionsByDifficulty("EASY");
@@ -90,10 +90,33 @@ public class QuizController {
 		//dhdsf
 		
 		//awrtywy;
+	}*/
+	
+	
+	@GetMapping(value="/attempt",params = {"id","answer"})
+	public ResponseEntity<?> attemptQuestion(@RequestParam(value = "id") String id, @RequestParam(value="answer") String answer){
+		
+		Question question = questionService.getQuestionById(id);
+		String level = question.getDifficulty();
+		
+		int size = level.length();
+		
+		if(size<=3) {
+			if(!answer.equals(question.getCorrect())) {
+				level = level+".2";
+				question = questionService.getQuestionByDifficulty(level);
+			}else {
+				level = level+".1";
+				question = questionService.getQuestionByDifficulty(level);
+			}
+		}else {
+			String[] levelArray = level.split(".");
+			level = Integer.toString((Integer.parseInt(levelArray[0])+1));
+			question = questionService.getQuestionByDifficulty(level);
+		}
+		
+		return ResponseEntity.ok(question);
 	}
-	
-	
-	
 
 
 }
