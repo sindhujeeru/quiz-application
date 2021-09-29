@@ -99,6 +99,7 @@ public class QuizController {
 		Question question = questionService.getQuestionById(id);
 		String level = question.getDifficulty();
 		
+		
 		int size = level.length();
 		
 		if(size<=3) {
@@ -106,12 +107,16 @@ public class QuizController {
 				level = level+".2";
 				question = questionService.getQuestionByDifficulty(level);
 			}else {
+				question.setResponded(true);
 				level = level+".1";
 				question = questionService.getQuestionByDifficulty(level);
 			}
 		}else {
 			String[] levelArray = level.split(".");
 			level = Integer.toString((Integer.parseInt(levelArray[0])+1));
+			if(answer.equals(question.getCorrect())) {
+				question.setResponded(true);
+			}
 			question = questionService.getQuestionByDifficulty(level);
 		}
 		
